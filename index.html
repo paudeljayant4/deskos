@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DeskOS — A personal web-based operating system with live mode switching">
+  <title>DeskOS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ===== PART 1: BOOT / WELCOME SCREEN ===== -->
+  <div id="welcome-screen" class="welcome-screen" role="status" aria-live="polite" aria-label="DeskOS booting">
+    <div class="welcome-content">
+      <div class="deskos-logo" aria-hidden="true">
+        <svg viewBox="0 0 120 120" width="120" height="120" fill="none">
+          <rect x="10" y="10" width="100" height="100" rx="24" class="logo-bg"/>
+          <path d="M32 60 L56 84 L92 36" stroke="currentColor" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round" class="logo-check"/>
+        </svg>
+      </div>
+      <h1 class="deskos-wordmark" aria-hidden="true">DeskOS</h1>
+      <p class="deskos-tagline">Focus • Gaming • Study</p>
+      <div class="boot-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="System initialization">
+        <div class="boot-bar" id="boot-bar"></div>
+      </div>
+      <p class="boot-status" id="boot-status" aria-live="polite">Initializing system…</p>
+    </div>
+  </div>
+
+  <!-- ===== PART 2: DESKTOP SHELL ===== -->
+  <div id="desktop" class="desktop" role="application" aria-label="DeskOS desktop" style="display: none;">
+    <!-- Top Bar -->
+    <header class="top-bar" role="banner">
+      <div class="top-bar-left">
+        <button class="menu-btn" id="menu-btn" aria-label="Open system menu" aria-expanded="false" aria-controls="system-menu">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" class="menu-icon">
+            <line x1="4" y1="6" x2="20" y2="6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="4" y1="12" x2="20" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="4" y1="18" x2="20" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <span class="deskos-title">DeskOS</span>
+      </div>
+
+      <div class="top-bar-center">
+        <div class="mode-switcher" id="mode-switcher" role="radiogroup" aria-label="System mode">
+          <button class="mode-btn" data-mode="focus" role="radio" aria-checked="true" aria-label="Focus mode — calm, distraction-free">
+            <span class="mode-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+              </svg>
+            </span>
+            <span class="mode-label">Focus</span>
+          </button>
+          <button class="mode-btn" data-mode="gaming" role="radio" aria-checked="false" aria-label="Gaming mode — high energy, immersive">
+            <span class="mode-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+              </svg>
+            </span>
+            <span class="mode-label">Gaming</span>
+          </button>
+          <button class="mode-btn" data-mode="study" role="radio" aria-checked="false" aria-label="Study mode — neutral, focused">
+            <span class="mode-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+              </svg>
+            </span>
+            <span class="mode-label">Study</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="top-bar-right">
+        <div class="system-status" aria-hidden="true">
+          <span class="status-dot" id="status-dot"></span>
+          <span class="status-text">Ready</span>
+        </div>
+        <time class="clock" id="clock" datetime="" aria-live="off">00:00</time>
+      </div>
+    </header>
+
+    <!-- Desktop Area -->
+    <main class="desktop-area" id="desktop-area" role="main">
+      <!-- Desktop Icons (empty state) -->
+      <div class="desktop-icons" id="desktop-icons" role="list" aria-label="Applications">
+        <button class="desktop-icon" data-app="timer" role="listitem" tabindex="0" aria-label="Open Focus Timer">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+          <span class="icon-label">Focus Timer</span>
+        </button>
+        <button class="desktop-icon" data-app="stats" role="listitem" tabindex="0" aria-label="Open Stats">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          <span class="icon-label">Stats</span>
+        </button>
+        <button class="desktop-icon" data-app="notes" role="listitem" tabindex="0" aria-label="Open Notes">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <line x1="10" y1="9" x2="8" y2="9"/>
+          </svg>
+          <span class="icon-label">Notes</span>
+        </button>
+      </div>
+
+      <!-- Windows container -->
+      <div class="windows-layer" id="windows-layer" role="region" aria-label="Open windows"></div>
+    </main>
+
+    <!-- System Menu (hidden by default) -->
+    <div class="system-menu" id="system-menu" role="menu" aria-orientation="vertical" aria-label="System menu" hidden>
+      <div class="menu-section">
+        <div class="menu-header">Applications</div>
+        <button class="menu-item" role="menuitem" data-action="new-timer">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span>Focus Timer</span>
+          <kbd>⌘T</kbd>
+        </button>
+        <button class="menu-item" role="menuitem" data-action="new-stats">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span>Stats</span>
+          <kbd>⌘S</kbd>
+        </button>
+        <button class="menu-item" role="menuitem" data-action="new-notes">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span>Notes</span>
+          <kbd>⌘N</kbd>
+        </button>
+      </div>
+      <div class="menu-divider" role="separator"></div>
+      <div class="menu-section">
+        <div class="menu-header">Window</div>
+        <button class="menu-item" role="menuitem" data-action="close-focused">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <span>Close Window</span>
+          <kbd>⌘W</kbd>
+        </button>
+        <button class="menu-item" role="menuitem" data-action="minimize-focused">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>Minimize</span>
+          <kbd>⌘M</kbd>
+        </button>
+      </div>
+      <div class="menu-divider" role="separator"></div>
+      <div class="menu-section">
+        <button class="menu-item menu-item-danger" role="menuitem" data-action="clear-sessions">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          <span>Clear All Sessions</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container for notifications -->
+  <div class="toast-container" id="toast-container" aria-live="polite" aria-label="Notifications"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
